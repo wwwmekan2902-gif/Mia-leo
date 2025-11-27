@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="tk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Ýolyşyk Testi (Stroop Test)</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --accent-color: #4CAF50;
+            --button-bg: #f0f0f0;
+            --button-text: #333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+            text-align: center;
+        }
+        .theme-light {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --button-bg: #f0f0f0;
+            --button-text: #333;
+        }
+        .theme-dark {
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --button-bg: #333333;
+            --button-text: #ffffff;
+        }
+        .theme-yellow {
+            --bg-color: #fffde7;
+            --text-color: #333333;
+            --button-bg: #fff59d;
+            --button-text: #333;
+        }
+        header {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .container {
+            flex: 1;
+            padding: 20px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        .settings {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        select {
+            padding: 8px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: var(--button-bg);
+            color: var(--button-text);
+            width: 80%;
+            max-width: 250px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        .example {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+        }
+        .example span {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 5px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #start-button {
+            display: block;
+            width: 90%;
+            max-width: 300px;
+            margin: 30px auto;
+            padding: 15px;
+            font-size: 18px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        #start-button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+        #test-page {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+            justify-content: space-between;
+        }
+        #timer {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+        #stimulus {
+            font-size: 60px;
+            font-weight: bold;
+            margin: 30px 0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .color-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .color-button {
+            padding: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            transition: transform 0.2s;
+        }
+        .color-button:hover {
+            transform: scale(1.1);
+        }
+        #results {
+            display: none;
+            padding: 30px;
+        }
+        #results h2 {
+            font-size: 24px;
+        }
+        #results p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        #restart-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        #restart-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body class="theme-light">
+    <header>Ýolyşyk Testi</header>
+    <div class="container">
+        <div class="settings">
+            <select id="theme-select">
+                <option value="light">Ak (Açyk)</option>
+                <option value="dark">Gara (Garaňky)</option>
+                <option value="yellow">Sary (Sary)</option>
+            </select>
+        </div>
+        <h1>Hoş geldiňiz!</h1>
+        <p>Bu testde berlen  reňkleriň atlaryny  okaman, sözüň renkini aýtmaly. Mysal üçin, "Gyzyl" sözi ýaşyl reňkde ýazylan bolsa, "Yaşyl" diýmeli.</p>
+        <p>Test 10 soragdan ybarat. Wagtyňyzy ölçäp, dogry jogaplaryň sanyny we umumy wagty soňunda görkezilýär. </p>
+        
+        <h2>Mysal</h2>
+        <div class="example">
+            <span style="color: green;">Gyzyl</span>
+            <span style="color: red;">Gök</span>
+            <span style="color: black;">Sary</span>
+            <span style="color: orange;">Yaşyl</span>
+            <span style="color: blue;">Gök</span>
+            <span style="color: yellow;">Mämişi</span>
+            <span style="color: red;">Gara</span>
+            <span style="color: green;">Sary</span>
+            <span style="color: orange;">Yaşyl</span>
+            <span style="color: red;">Sary</span>
+            <span style="color: orange;">Gyzyl</span>
+            <span style="color: red;">Gara</span>
+            <span style="color: black;">Gülgüne</span>
+            <span style="color: green;">Gülgüne</span>
+            <span style="color: yellow;">Mämişi</span>
+            <span style="color: blue;">Sary</span>
+            <span style="color: green;">Yaşyl</span>
+            <span style="color: yellow;">Gök</span>
+            <span style="color: pink;">Gara</span>
+            <span style="color: red;">Sary</span>
+            <span style="color: orange;">Yaşyl</span>
+            <span style="color: green;">Gyzyl</span>
+        </div>
+        
+        <button id="start-button">Testi Başla</button>
+    </div>
+
+    <div id="test-page">
+        <div id="timer">Wagt: 0 s</div>
+        <div id="stimulus"></div>
+        <div class="color-buttons"></div>
+    </div>
+    
+    <div id="results">
+        <h2>Netijeler</h2>
+        <p id="score"></p>
+        <p id="time"></p>
+        <button id="restart-button">Täzeden Başla</button>
+    </div>
+
+    <script>
+        const colors = [
+            {name: 'Gyzyl', hex: '#FF0000'},
+            {name: 'Gök', hex: '#0000FF'},
+            {name: 'Sary', hex: '#FFFF00'},
+            {name: 'Yaşyl', hex: '#008000'},
+            {name: 'Gara', hex: '#000000'},
+            {name: 'Mämişi', hex: '#800080'},
+            {name: 'Gülgüne', hex: '#FF69B4'}
+        ];
+
+        let trials = [];
+        let currentTrial = 0;
+        let score = 0;
+        let startTime;
+        let timerInterval;
+        let elapsedTime = 0;
+
+        function generateTrials() {
+            trials = [];
+            for (let i = 0; i < 10; i++) {
+                const wordIndex = Math.floor(Math.random() * colors.length);
+                let colorIndex = Math.floor(Math.random() * colors.length);
+                while (colorIndex === wordIndex) {
+                    colorIndex = Math.floor(Math.random() * colors.length);
+                }
+                trials.push({
+                    word: colors[wordIndex].name,
+                    color: colors[colorIndex].hex,
+                    correct: colors[colorIndex].name
+                });
+            }
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                document.getElementById('timer').textContent = `Wagt: ${elapsedTime} s`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function showTrial() {
+            if (currentTrial < trials.length) {
+                const trial = trials[currentTrial];
+                document.getElementById('stimulus').textContent = trial.word;
+                document.getElementById('stimulus').style.color = trial.color;
+            } else {
+                stopTimer();
+                document.getElementById('test-page').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('score').textContent = `Dogry jogaplar: ${score} / 10`;
+                document.getElementById('time').textContent = `Umumy wagt: ${elapsedTime} saniýe`;
+            }
+        }
+
+        function createButtons() {
+            const buttonContainer = document.querySelector('.color-buttons');
+            buttonContainer.innerHTML = '';
+            colors.forEach(color => {
+                const button = document.createElement('button');
+                button.textContent = color.name;
+                button.classList.add('color-button');
+                button.style.backgroundColor = color.hex;
+                if (['#FFFF00', '#FF69B4'].includes(color.hex)) {
+                    button.style.color = '#000';
+                }
+                button.addEventListener('click', () => {
+                    handleResponse(color.name);
+                });
+                buttonContainer.appendChild(button);
+            });
+        }
+
+        function handleResponse(selected) {
+            const trial = trials[currentTrial];
+            if (selected === trial.correct) {
+                score++;
+            }
+            currentTrial++;
+            showTrial();
+        }
+
+        document.getElementById('start-button').addEventListener('click', () => {
+            generateTrials();
+            createButtons();
+            document.querySelector('.container').style.display = 'none';
+            document.getElementById('test-page').style.display = 'flex';
+            startTimer();
+            showTrial();
+        });
+
+        document.getElementById('restart-button').addEventListener('click', () => {
+            document.getElementById('results').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+            currentTrial = 0;
+            score = 0;
+            elapsedTime = 0;
+        });
+
+        document.getElementById('theme-select').addEventListener('change', (e) => {
+            document.body.classList.remove('theme-light', 'theme-dark', 'theme-yellow');
+            document.body.classList.add(`theme-${e.target.value}`);
+        });
+    </script>
+</body>
+</html>
